@@ -1,11 +1,27 @@
-/**
- * @file MyCustomAuthorizationController.cpp
- * @author Benedikt-Alexander Mokroß <bam@icognize.de>
- * @date 2019-08-28
- * @brief <ToDo>
+/***************************************************************************
  *
- * Copyright (c) 2019 iCOGNIZE GmbH. All rights reserved.
- */
+ * Project         _____    __   ____   _      _
+ *                (  _  )  /__\ (_  _)_| |_  _| |_
+ *                 )(_)(  /(__)\  )( (_   _)(_   _)
+ *                (_____)(__)(__)(__)  |_|    |_|
+ *
+ *
+ * Copyright 2018-present, Leonid Stryzhevskyi <lganzzzo@gmail.com>
+ *                         Benedikt-Alexander Mokroß <oatpp@bamkrs.de>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ***************************************************************************/
 
 #ifndef MyCustomAuthorizationController_hpp
 #define MyCustomAuthorizationController_hpp
@@ -22,6 +38,16 @@
  * Sample Api Controller with custom authorization.
  */
 class MyCustomAuthorizationController : public oatpp::web::server::api::ApiController {
+ private:
+  /**
+   * Somehow store a pointer to your Authorization-Handler
+   * You can also pass this pointer in your constructor and do not have to instantiate your Autorization-Handler here.
+   * Most likely, you want a shared Authorization-Handler for all endpoints.
+   */
+  std::shared_ptr<MyAuthorization>
+      m_auth = std::make_shared<MyAuthorization>("REALM");
+
+
  public:
   /**
    * Constructor with object mapper and custom authorization handler.
@@ -30,10 +56,7 @@ class MyCustomAuthorizationController : public oatpp::web::server::api::ApiContr
   MyCustomAuthorizationController(OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper))
       : oatpp::web::server::api::ApiController(objectMapper)
   {
-    /**
-     * Register a custom authorization handler, setAuthorizationHandler is public
-     */
-    setAuthorizationHandler(std::make_shared<MyAuthorization>());
+
   }
  public:
 
@@ -45,20 +68,15 @@ class MyCustomAuthorizationController : public oatpp::web::server::api::ApiContr
   /**
    * Custom authorization process, evaluate credentials in custom authorization handler
    */
-  ENDPOINT("GET", "/moresecret", moresecret, AUTHORIZATION(std::shared_ptr<MyAuthorizationObject>, authorizationObject)) {
+  ENDPOINT("GET", "/whoami", whoami, AUTHORIZATION(std::shared_ptr<MyAuthorizationObject>, authorizationObject, m_auth)) {
 
     auto dto = MyDto::createShared();
     dto->statusCode = 200;
     dto->message = "Hello " + authorizationObject->user;
 
-    // sendMailTo(dto->email, "New Login", "We detected a new login [...]");
-
-    if(authorizationObject->isAdmin()) {
-      dto->message = dto->message + " - Watch out! We got an admin over here!";
-    }
+    OATPP_LOGI("MyCustomAuthorizationController", "/whoami called by user '%s' (%d)", authorizationObject->user->c_str(), authorizationObject->id);
 
     return createDtoResponse(Status::CODE_200, dto);
-
   }
 
   // TODO Insert Your endpoints here !!!

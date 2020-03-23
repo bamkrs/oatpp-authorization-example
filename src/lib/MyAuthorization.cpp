@@ -1,55 +1,28 @@
-/**
- * @file MyAuthorization.cpp
- * @author Benedikt-Alexander Mokroß <bam@icognize.de>
- * @date 2019-08-28
- * @brief
+/***************************************************************************
  *
- * Copyright (c) 2019 iCOGNIZE GmbH. All rights reserved.
- */
+ * Project         _____    __   ____   _      _
+ *                (  _  )  /__\ (_  _)_| |_  _| |_
+ *                 )(_)(  /(__)\  )( (_   _)(_   _)
+ *                (_____)(__)(__)(__)  |_|    |_|
+ *
+ *
+ * Copyright 2018-present, Leonid Stryzhevskyi <lganzzzo@gmail.com>
+ *                         Benedikt-Alexander Mokroß <oatpp@bamkrs.de>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ***************************************************************************/
 
 #include "MyAuthorization.hpp"
 
-std::shared_ptr<oatpp::web::server::handler::AuthorizationObject> MyAuthorization::handleAuthorization(const oatpp::String &header) {
-
-  /**
-   * You can either parse the header yourself or - in case of basic auth - use the default authorizationObject to do this for you
-   */
-  auto defaultAuthorization = oatpp::web::server::handler::DefaultAuthorizationHandler::defaultAuthorizationObject(header);
-
-  auto myAuthorization = std::make_shared<MyAuthorizationObject>();
-  myAuthorization->user = defaultAuthorization->user;
-  myAuthorization->password = defaultAuthorization->password;
-
-  /**
-   * Now implement your own authorization process, e.g. a database-query
-   * We just hardcode some examples.
-   */
-  if(myAuthorization->user == "foo" && myAuthorization->password == "bar") {
-
-    myAuthorization->email = "foobar@oatpp.io";
-    myAuthorization->id = 1337;
-
-  } else if(myAuthorization->user == "john" && myAuthorization->password == "doe") {
-
-    myAuthorization->email = "johndoe@oatpp.io";
-    myAuthorization->id = 0;
-
-  } else {
-
-    /**
-     * You can return nullptr if you want oatpp to deny the request e.g. in case of a failed authorization
-     * Or return an AuthorizationObject and evaluate a successfull authorization in your endpoint, its up to you!
-     */
-    return nullptr;
-
-  }
-
-  /**
-   * Return your authorization object. oatpp takes care to cast it back to your in AUTHORIZATION(std::shared_ptr<TYPE>, NAME) specified type
-   */
-  return myAuthorization;
-}
-
-bool MyAuthorizationObject::isAdmin() {
-  return id == oatpp::Int64(0);
-}
+// Space for some heavier implementations
