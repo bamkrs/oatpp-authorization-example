@@ -45,7 +45,7 @@ class MyCustomAuthorizationController : public oatpp::web::server::api::ApiContr
    * Most likely, you want a shared Authorization-Handler for all endpoints.
    */
   std::shared_ptr<MyAuthorization>
-      m_auth = std::make_shared<MyAuthorization>("REALM");
+      m_auth = std::make_shared<MyAuthorization>("CUSTOMREALM");
 
 
  public:
@@ -68,13 +68,13 @@ class MyCustomAuthorizationController : public oatpp::web::server::api::ApiContr
   /**
    * Custom authorization process, evaluate credentials in custom authorization handler
    */
-  ENDPOINT("GET", "/whoami", whoami, AUTHORIZATION(std::shared_ptr<MyAuthorizationObject>, authorizationObject, m_auth)) {
+  ENDPOINT("GET", "/customwhoami", customwhoami, AUTHORIZATION(std::shared_ptr<MyAuthorizationObject>, authorizationObject, m_auth)) {
 
     auto dto = MyDto::createShared();
     dto->statusCode = 200;
     dto->message = "Hello " + authorizationObject->user;
 
-    OATPP_LOGI("MyCustomAuthorizationController", "/whoami called by user '%s' (%d)", authorizationObject->user->c_str(), authorizationObject->id);
+    OATPP_LOGI("MyCustomAuthorizationController", "/customwhoami called by user '%s' (%d)", authorizationObject->user->c_str(), authorizationObject->id);
 
     return createDtoResponse(Status::CODE_200, dto);
   }

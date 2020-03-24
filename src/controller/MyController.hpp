@@ -28,16 +28,25 @@
 
 #include "dto/DTOs.hpp"
 
+#include "oatpp/web/server/handler/AuthorizationHandler.hpp"
 #include "oatpp/web/server/api/ApiController.hpp"
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/macro/component.hpp"
 
-#include "lib/MyAuthorization.hpp"
 
 /**
  * Sample Api Controller.
  */
 class MyController : public oatpp::web::server::api::ApiController {
+ private:
+  /**
+   * Somehow store a pointer to your Authorization-Handler
+   * You can also pass this pointer in your constructor and do not have to instantiate your Autorization-Handler here.
+   * Most likely, you want a shared Authorization-Handler for all endpoints.
+   */
+  std::shared_ptr<oatpp::web::server::handler::BasicAuthorizationHandler>
+      m_auth = std::make_shared<oatpp::web::server::handler::BasicAuthorizationHandler>("REALM");
+
 public:
   /**
    * Constructor with object mapper.
@@ -63,10 +72,10 @@ public:
   /**
    * Default authorization process, just parse Authorization header and get username/password
    */
-  ENDPOINT("GET", "/whoami", whoami, AUTHORIZATION(std::shared_ptr<MyAuthorizationObject>, authorizationObject)) {
+  ENDPOINT("GET", "/whoami", whoami, AUTHORIZATION(std::shared_ptr<oatpp::web::server::handler::DefaultBasicAuthorizationObject>, authorizationObject, m_auth)) {
     auto dto = MyDto::createShared();
     dto->statusCode = 200;
-    dto->message = "Hello " + authorizationObject->user;
+    dto->message = "Hello " + authorizationObject->userId;
     return createDtoResponse(Status::CODE_200, dto);
   }
 

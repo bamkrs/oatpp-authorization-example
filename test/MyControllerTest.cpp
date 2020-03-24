@@ -89,31 +89,26 @@ void MyControllerTest::onRun() {
     }
 
     {
-      auto secretResponse = client->secret("foo:bar");
+      auto secretResponse = client->customwhoami("root:hardcodingyourpasswordsisntsafe");
       OATPP_ASSERT(secretResponse->getStatusCode() == 200);
 
       auto secretMessage = secretResponse->readBodyToDto<MyDto>(objectMapper.get());
       OATPP_ASSERT(secretMessage);
-      OATPP_ASSERT(secretMessage->message == "Hello foo");
+      OATPP_ASSERT(secretMessage->message == "Hello root");
     }
 
     {
-      auto invalidSecretResponse = client->secret("john:doe");
+      auto invalidSecretResponse = client->customwhoami("john:doe");
       OATPP_ASSERT(invalidSecretResponse->getStatusCode() == 401);
     }
 
     {
-      auto moreSecretResponse = client->moreSecret("john:doe");
+      auto moreSecretResponse = client->customwhoami("root:hardcodingyourpasswordsisntsafe");
       OATPP_ASSERT(moreSecretResponse->getStatusCode() == 200);
 
       auto moreSecretMessage = moreSecretResponse->readBodyToDto<MyDto>(objectMapper.get());
       OATPP_ASSERT(moreSecretMessage);
-      OATPP_ASSERT(moreSecretMessage->message == "Hello john - Watch out! We got an admin over here!");
-    }
-
-    {
-      auto invalidMoreSecretResponse = client->moreSecret("alice:bob");
-      OATPP_ASSERT(invalidMoreSecretResponse->getStatusCode() == 401);
+      OATPP_ASSERT(moreSecretMessage->message == "Hello root");
     }
 
   }, std::chrono::minutes(10) /* test timeout */);

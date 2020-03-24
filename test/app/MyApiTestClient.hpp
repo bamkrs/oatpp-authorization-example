@@ -42,9 +42,8 @@ class MyApiTestClient : public oatpp::web::client::ApiClient {
   API_CLIENT_INIT(MyApiTestClient)
 
   API_CALL("GET", "/", getRoot)
-  API_CALL("GET", "/whoami", whoami, AUTHORIZATION(String, authorization))
-  API_CALL("GET", "/secret", secret, AUTHORIZATION(String, authorization))
-  API_CALL("GET", "/moresecret", moreSecret, AUTHORIZATION(String, authorization))
+  API_CALL("GET", "/whoami", whoami, AUTHORIZATION_BASIC(String, authorization))
+  API_CALL("GET", "/customwhoami", customwhoami, AUTHORIZATION_BASIC(String, authorization))
   // TODO - add more client API calls here
 
 };
